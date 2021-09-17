@@ -1,10 +1,30 @@
 import ical from 'node-ical';
+import { constants } from '../constants';
 
 export default class CalendarHelper {
-	private calendarUri = 'https://wiki.isobarsystems.com/rest/calendar-services/1.0/calendar/export/subcalendar/private/81cc1b5d3a3d555286761d02daa53df15cf6cf66.ics';
+	private calendarUri = constants.calendarUri;
 	constructor() {}
 
 	public fetchEvents = async () => {
 		return await ical.async.fromURL(this.calendarUri);
+	}
+
+	public getLeaves = (events: any): any[] => {
+		let eventArr: any[] = [];
+		const year = new Date().getFullYear().toString();
+
+		const leaves = Object.keys(events).filter(key => {
+			const timestamp = key.split('-')[0];
+			return timestamp.includes(year);
+		});
+
+		for (const key of leaves) {
+			const leave = events[key];
+			if (leave.type === 'VEVENT') {
+				eventArr.push(leave);
+			}
+		}
+
+		return eventArr;
 	}
 }

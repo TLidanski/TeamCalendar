@@ -1,6 +1,9 @@
 import express, { Request, Response } from 'express';
 import IController from '../interfaces/IController';
+
 import CalendarHelper from '../helpers/calendar.helper';
+
+import CalendarModel from '../models/calendar.model';
 
 export default class CalendarController implements IController {
 	path: string = '/calendar';
@@ -16,9 +19,14 @@ export default class CalendarController implements IController {
 	}
 
 	private fetchData = async (req: Request, res: Response) => {
+		const calendarModel: CalendarModel = new CalendarModel();
 		const webEvents = await this.CalendarHelper.fetchEvents();
-		console.log(webEvents);
+		const leaves = this.CalendarHelper.getLeaves(webEvents);
 
-		res.json(webEvents)
+		await calendarModel.connect();
+		await calendarModel.insertMultipleEvents(leaves);
+
+		calendarModel.close();
+		res.json(leaves)
 	}
 }
