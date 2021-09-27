@@ -11,7 +11,7 @@ export default class CalendarController implements IController {
 	path: string = '/calendar';
 	router: express.Router = express.Router();
 	private CalendarHelper: CalendarHelper = new CalendarHelper();
-    private UserHelper: UserHelper = new UserHelper();
+	private UserHelper: UserHelper = new UserHelper();
 
 	constructor() {
 		this.initRoutes();
@@ -23,20 +23,20 @@ export default class CalendarController implements IController {
 
 	private fetchData = async (req: Request, res: Response) => {
 		const calendarModel: CalendarModel = new CalendarModel();
-        const userModel: UserModel = new UserModel();
+		const userModel: UserModel = new UserModel();
 		const webEvents = await this.CalendarHelper.fetchEvents();
 		const leaves = this.CalendarHelper.getLeaves(webEvents);
 
 		await calendarModel.connect();
-        await calendarModel.deleteAllRecords();
+		await calendarModel.deleteAllRecords();
 		await calendarModel.insertMultipleEvents(leaves);
 		calendarModel.close();
 
-        const users = this.UserHelper.extractUsersFromLeaves(leaves);
-        await userModel.connect();
-        await userModel.deleteAllRecords();
+		const users = this.UserHelper.extractUsersFromLeaves(leaves);
+		await userModel.connect();
+		await userModel.deleteAllRecords();
 		await userModel.insertMultipleEvents(users);
-        userModel.close();
+		userModel.close();
 
 		res.json(leaves)
 	}
