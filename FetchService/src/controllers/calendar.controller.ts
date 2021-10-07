@@ -19,6 +19,7 @@ export default class CalendarController implements IController {
 
 	public initRoutes = () => {
 		this.router.get(this.path, this.fetchData);
+		this.router.post(this.path, this.getLeaves);
 	}
 
 	private fetchData = async (req: Request, res: Response) => {
@@ -40,4 +41,15 @@ export default class CalendarController implements IController {
 
 		res.json(leaves)
 	}
+
+	private getLeaves = async (req: Request, res: Response) => {
+		const {startDate, endDate} = req.body;
+		const calendarModel: CalendarModel = new CalendarModel();
+
+		await calendarModel.connect();
+		const leaves = await calendarModel.fetchLeavesBetweenDates(startDate, endDate);
+		calendarModel.close();
+
+		res.json(leaves);
+    }
 }
