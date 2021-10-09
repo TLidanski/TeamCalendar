@@ -1,0 +1,147 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Open Sans Condensed', sans-serif;
+}
+
+p {
+    word-break: break-all;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.hide {
+    display: none;
+}
+
+// IMAGES
+.img-circle {
+    border-radius: 50%;
+}
+
+// INPUTS
+input {
+    width: 100%;
+    box-sizing: border-box;
+
+    &[type=text],
+    &[type=password] {
+        padding: 5px;
+        font-size: 15px;
+        outline: none;
+        user-select: text;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+
+    &[type=file] {
+        display: none;
+    }
+}
+
+select {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+
+    padding: 5px;
+    font-size: 15px;
+    outline: none;
+    user-select: text;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+// BUTTONS
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    cursor: pointer;
+
+    &-link {
+        background-color: transparent;
+        padding-left: 0;
+
+        &:hover {
+            text-decoration: underline;
+        }
+
+        &:focus {
+            text-decoration: underline;
+            outline: none;
+        }
+    }
+
+    &-primary {
+        background-color: #ffc507;
+        border: 1px solid black;
+        color: black;
+
+        &:hover {
+            background-color: #fcd03f;
+        }
+
+        &:focus {
+            text-decoration: none;
+            outline: none;
+            border: 2px solid black;
+        }
+
+        &:disabled {
+            opacity: 0.3;
+        }
+    }
+
+    &-danger {
+        background-color: #b52633;
+        border: 1px solid black;
+
+        &:hover {
+            background-color: #db2334;
+        }
+
+        &:focus {
+            text-decoration: none;
+        }
+    }
+
+    &-tab {
+        width: 100%;
+        background-color: transparent;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    &-tab.active {
+        border-bottom: 2px solid #ffc507;
+    }
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+.flex {
+    display: flex;
+}
