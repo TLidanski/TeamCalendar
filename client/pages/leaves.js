@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { getJson } from '../helpers/fetch';
 
 import DatePicker from 'react-datepicker';
 import UserLeave from '../components/UserLeave';
@@ -10,24 +11,17 @@ const Leaves = () => {
 	const [startDate, setStartDate] = useState(new Date());
 	const [endDate, setEndDate] = useState(new Date());
 
-	const postData = async () => {
-		const response = await fetch('http://localhost:4000/calendar', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({startDate, endDate})
-		});
-
-		setLeaves(await response.json());
+	const getLeaves = async () => {
+        const params = {startDate: startDate.toISOString(), endDate: endDate.toISOString()};
+		const leaveEvents = await getJson('http://localhost:4000/calendar/leaves', params);
+		setLeaves(leaveEvents);
 	}
 
 	return (
 		<>
 			<DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
 			<DatePicker selected={endDate} onChange={(date) => setEndDate(date)} />
-			<button onClick={postData}>Get Leaves</button>
+			<button onClick={getLeaves}>Get Leaves</button>
 
 			{leaves.map(event => <UserLeave event={event} />)}
 		</>
