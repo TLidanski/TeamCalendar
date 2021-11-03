@@ -26,6 +26,36 @@ export default class CalendarModel {
 		return await this.collection.insertMany(events);
 	}
 
+	public upsertEvents = async (events: any, lastUpdate: Date) => {
+		const year = new Date().getFullYear().toString();
+		const leaves = Object.keys(events).filter(key => {
+			const timestamp = key.split('-')[0];
+			const isRecentlyModified = new Date(events[key].lastmodified) > lastUpdate;
+			const isUserEvent = events[key].type === 'VEVENT';
+
+			return timestamp.includes(year) && isRecentlyModified && isUserEvent;
+		});
+
+		const bulkWriteOps = leaves.map(key => {
+			const event = events[key];
+			return {
+				updateOne: {
+					filter: {'event-id': event['event-id']},
+					update: {
+						$set: {
+							...event,
+							start: event.start.toLocaleDateString(),
+							end: event.end.toLocaleDateString()
+						}
+					},
+					upsert: true
+				}
+			};
+		});
+
+		return await this.collection.bulkWrite(bulkWriteOps);
+	}
+
     public fetchLeavesBetweenDates = async (start: any, end: any) => {
         return await this.collection.find({
             end: {$gte: new Date(start), $lte: new Date(end)}

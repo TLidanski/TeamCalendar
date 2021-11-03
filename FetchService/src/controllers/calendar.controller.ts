@@ -2,16 +2,14 @@ import express, { Request, Response } from 'express';
 import IController from '../interfaces/IController';
 
 import CalendarHelper from '../helpers/calendar.helper';
-import UserHelper from '../helpers/user.helper';
 
 import CalendarModel from '../models/calendar.model';
-import UserModel from '../models/user.model';
+import UpdateModel from '../models/update.model';
 
 export default class CalendarController implements IController {
 	path: string = '/calendar';
 	router: express.Router = express.Router();
 	private CalendarHelper: CalendarHelper = new CalendarHelper();
-	private UserHelper: UserHelper = new UserHelper();
 
 	constructor() {
 		this.initRoutes();
@@ -24,22 +22,20 @@ export default class CalendarController implements IController {
 
 	private fetchData = async (req: Request, res: Response) => {
 		const calendarModel: CalendarModel = new CalendarModel();
-		const userModel: UserModel = new UserModel();
+		const updateModel : UpdateModel = new UpdateModel();
+
+		await updateModel.connect();
 		const webEvents = await this.CalendarHelper.fetchEvents();
-		const leaves = this.CalendarHelper.getLeaves(webEvents);
+		const lastUpdateDate = await updateModel.getLastUpdate();
 
 		await calendarModel.connect();
-		await calendarModel.deleteAllRecords();
-		await calendarModel.insertMultipleEvents(leaves);
+		const result = await calendarModel.upsertEvents(webEvents, lastUpdateDate);
 		calendarModel.close();
 
-		const users = this.UserHelper.extractUsersFromLeaves(leaves);
-		await userModel.connect();
-		await userModel.deleteAllRecords();
-		await userModel.insertMultipleEvents(users);
-		userModel.close();
+		await updateModel.insertLastUpdateDate(new Date());
+		updateModel.close();
 
-		res.json(leaves)
+		res.json(result)
 	}
 
 	private getLeaves = async (req: Request, res: Response) => {
